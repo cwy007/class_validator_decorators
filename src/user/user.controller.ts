@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ClassSerializerInterceptor } from 'src/class-serializer.interceptor';
+import { SerializeOptions } from 'src/serialize-options.decorator';
 
 @Controller('user')
-@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
@@ -13,6 +14,10 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @SerializeOptions({
+    strategy: 'excludeAll',
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll() {
     return this.userService.findAll();
