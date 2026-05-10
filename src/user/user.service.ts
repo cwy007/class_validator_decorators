@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserVo } from 'src/vo/user.vo';
 
 const database: User[] = [];
 let id = 0;
@@ -9,7 +10,7 @@ let id = 0;
 @Injectable()
 export class UserService {
   create(createUserDto: CreateUserDto) {
-    const user = new User(createUserDto)
+    const user = new User(createUserDto);
 
     user.id = ++id;
 
@@ -19,24 +20,43 @@ export class UserService {
   }
 
   findAll() {
-    return database;
+    return database
+    // .map(
+    //   (user) =>
+    //     new UserVo({
+    //       id: user.id,
+    //       username: user.username,
+    //       email: user.email,
+    //     }),
+    // );
   }
 
   findOne(id: number) {
-    return database.find(user => user.id === id);
+    const user = database.find((user) => user.id === id);
+    return user
+    // ? new UserVo({
+    //   id: user.id,
+    //   username: user.username,
+    //   email: user.email,
+    // })
+    // : undefined;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    const user = database.find(user => user.id === id);
+    const user = database.find((user) => user.id === id);
     if (user) {
       Object.assign(user, updateUserDto);
-      database.splice(database.findIndex(u => u.id === id), 1, user);
+      database.splice(
+        database.findIndex((u) => u.id === id),
+        1,
+        user,
+      );
     }
     return user;
   }
 
   remove(id: number) {
-    const index = database.findIndex(user => user.id === id);
+    const index = database.findIndex((user) => user.id === id);
     if (index !== -1) {
       database.splice(index, 1);
       return true;
