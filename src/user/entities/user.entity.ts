@@ -1,16 +1,25 @@
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose, Transform } from "class-transformer";
 
 export class User {
+  @ApiProperty()
   id: number;
 
+  @ApiProperty()
   username: string;
 
+  @ApiHideProperty()
   @Exclude()
   password: string;
 
+  @ApiProperty()
   @Transform(({ value }) => value.toLowerCase())
   email: string;
 
+  @ApiProperty({
+    description: "Masked email address",
+    type: String,
+  })
   @Expose()
   get maskedEmail() {
     const [localPart, domain] = this.email.split("@");
