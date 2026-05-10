@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+
+const database: User[] = [
+  new User({ id: 1, username: 'john_doe', password: 'password123', email: 'john_doe@example.com' }),
+  new User({ id: 2, username: 'jane_doe', password: 'password456', email: 'jane_doe@example.com' }),
+];
+let id = 0;
 
 @Injectable()
 export class UserService {
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    const user = new User({ id: ++id, ...createUserDto });
+    database.push(user);
+    return user;
   }
 
   findAll() {
-    return `This action returns all user`;
+    return database;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return database.find(user => user.id === id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    const user = database.find(user => user.id === id);
+    if (user) {
+      Object.assign(user, updateUserDto);
+      database.splice(database.findIndex(u => u.id === id), 1, user);
+    }
+    return user;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    const index = database.findIndex(user => user.id === id);
+    if (index !== -1) {
+      database.splice(index, 1);
+      return true;
+    }
+    return false;
   }
 }
